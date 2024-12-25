@@ -1,4 +1,5 @@
 import time
+import json
 
 from flask import Flask, request
 from gevent import monkey
@@ -21,7 +22,7 @@ def get_context_page(instance, stealth_js_path):
 
 
 # 如下更改为 stealth.min.js 文件路径地址
-stealth_js_path = "/Users/reajason/ReaJason/xhs/tests/stealth.min.js"
+stealth_js_path = r"D:\Kyle\PycharmProjects\stealth.min.js"
 print("正在启动 playwright")
 playwright = sync_playwright().start()
 browser_context, context_page = get_context_page(playwright, stealth_js_path)
@@ -39,20 +40,32 @@ print("跳转小红书首页成功，等待调用")
 
 
 def sign(uri, data, a1, web_session):
-    encrypt_params = context_page.evaluate("([url, data]) => window._webmsxyw(url, data)", [uri, data])
-    return {
-        "x-s": encrypt_params["X-s"],
-        "x-t": str(encrypt_params["X-t"])
-    }
+    try:
+        context_page.reload()
+        # 确保页面加载完成
+        context_page.wait_for_load_state('networkidle')
+
+        # 检查页面是否处于预期状态
+        if not context_page.is_visible('body'):
+            raise Exception("页面未加载完成或未处于预期状态")
+        encrypt_params = context_page.evaluate("([url, data]) => window._webmsxyw(url, data)", [uri, data])
+        return {
+            "x-s": encrypt_params["X-s"],
+            "x-t": str(encrypt_params["X-t"])
+        }
+    except  Exception as e:
+        raise Exception(e)
+
 
 
 @app.route("/sign", methods=["POST"])
 def hello_world():
-    json = request.json
-    uri = json["uri"]
-    data = json["data"]
-    a1 = json["a1"]
-    web_session = json["web_session"]
+    req_json = request.json
+    # print(json.dumps(req_json, indent=2, ensure_ascii=False))
+    uri = req_json["uri"]
+    data = req_json["data"]
+    a1 = req_json["a1"]
+    web_session = req_json["web_session"]
     return sign(uri, data, a1, web_session)
 
 

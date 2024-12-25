@@ -652,7 +652,7 @@ class XhsClient:
         :rtype: dict
         """
         uri = "/api/sns/web/v1/login/qrcode/create"
-        data = {}
+        data = {"qr_type": 1}
         return self.post(uri, data)
 
     def check_qrcode(self, qr_id: str, code: str):
@@ -793,7 +793,7 @@ class XhsClient:
             "version": "1",
             "source": "web",
         }
-        res = self.get(uri, params)
+        res = self.get(uri, params, is_creator=True, )
         temp_permit = res["uploadTempPermits"][0]
         file_id = temp_permit["fileIds"][0]
         token = temp_permit["token"]
