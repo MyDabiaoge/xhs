@@ -16,7 +16,8 @@ from .help import (cookie_jar_to_cookie_str, download_file,
                    get_imgs_url_from_note, get_search_id, get_valid_path_name,
                    get_video_url_from_note, parse_xml, sign,
                    update_session_cookies_from_cookie)
-
+from http.client import HTTPConnection
+HTTPConnection.debuglevel=0
 
 class FeedType(Enum):
     # 推荐
