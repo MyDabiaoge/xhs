@@ -41,13 +41,13 @@ print("跳转小红书首页成功，等待调用")
 
 def sign(uri, data, a1, web_session):
     try:
-        context_page.reload()
-        # 确保页面加载完成
-        context_page.wait_for_load_state('networkidle')
-
-        # 检查页面是否处于预期状态
-        if not context_page.is_visible('body'):
-            raise Exception("页面未加载完成或未处于预期状态")
+        # context_page.reload()
+        # # 确保页面加载完成
+        # context_page.wait_for_load_state('networkidle')
+        #
+        # # 检查页面是否处于预期状态
+        # if not context_page.is_visible('body'):
+        #     raise Exception("页面未加载完成或未处于预期状态")
         encrypt_params = context_page.evaluate("([url, data]) => window._webmsxyw(url, data)", [uri, data])
         return {
             "x-s": encrypt_params["X-s"],
