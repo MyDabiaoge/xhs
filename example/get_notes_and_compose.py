@@ -34,10 +34,10 @@ if __name__ == '__main__':
 -正文:
 {}
 这是一篇点赞量很高的的小红书博主的文稿，我希望你能详细拆解。其中必须
-包括:标题、个性化和真实性、布局、长度、结构、表情包以及语言风格等。然后根据拆解的部分进行权重分配。最后请你按照分析的结果模仿该博主的写作风格，根据“{}”这些信息写一篇探店安利文稿，但文稿中不强制要求包含这些信息。要求逻辑合理语言通畅，带话题标签。只需要输出最后的文稿就行了。
+包括:标题、个性化和真实性、布局、长度、结构、表情包以及语言风格等。然后根据拆解的部分进行权重分配。最后请你按照分析的结果模仿该博主的写作风格，根据“{}”这些信息写一篇探店文稿，重点描述味道和体验不要提及价格。要求口语化且字数不能大于原文，文末带话题标签。只需要输出最后的文稿就行了。
 '''
     # get note by keyword
-    keyword = "粉店"
+    keyword = "这家店"
     data = xhs_client.get_note_by_keyword(keyword, sort=SearchSortType.MOST_POPULAR, note_type=SearchNoteType.IMAGE)
     # print(json.dumps(data, ensure_ascii=False, indent=2))
     for item in data['items']:
@@ -48,13 +48,13 @@ if __name__ == '__main__':
         print(source_note_url)
         note_info = xhs_client.get_note_by_id(item['id'], item['xsec_token'])
         item_content = chat_content.format(note_info['title'], note_info['desc'],
-                                           "店名：金记三都烧鸭粉店，地址：柳州市马鹿山农贸市场入口旁，营业时间：18:00-02:00，菜品：1.烧鸭粉一两9元 二两10元 三两11元 2.烧鸭腿粉一两10元 二两11元 三两12元，注意事项:该店未上架任何网络平台")
+                                           "店名：金记三都烧鸭粉，地址：柳州市马鹿山农贸市场入口旁，口味：酸鲜甜，配料：烧鸭酱、白辣椒、蒜米、葱、香菜、辣油，送鸭头,下午六点开门")
         client = OpenAI(api_key="sk-f92524b97bd64f84928599e9ac6bbc30", base_url="https://api.deepseek.com")
 
         response = client.chat.completions.create(
             model="deepseek-chat",
             messages=[
-                {"role": "system", "content": "你是 DeepSeek，负责小红书博主文稿拆解与模仿。"},
+                {"role": "system", "content": "你是一位高冷客观的美食探店博主。"},
                 {"role": "user", "content": item_content},
             ],
             stream=False
