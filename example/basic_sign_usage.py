@@ -27,13 +27,18 @@ if __name__ == '__main__':
         # 'https': 'http://{}'.format(proxy_ip)
     }
     xhs_client = XhsClient(cookie, sign=sign, proxies=proxies)
-    # get note info
-    note_info = xhs_client.get_note_by_id("6559843e000000001f02d333", "ABvXuks91Jwa1OUCSf2x3w2lhQe1GJr15WQ5a_63uPx00=")
-    print(datetime.datetime.now())
-    print(json.dumps(note_info, indent=2, ensure_ascii=False))
-    print(xhs.help.get_imgs_url_from_note(note_info))
+    # # get note info
+    # note_info = xhs_client.get_note_by_id("6559843e000000001f02d333", "ABvXuks91Jwa1OUCSf2x3w2lhQe1GJr15WQ5a_63uPx00=")
+    # print(datetime.datetime.now())
+    # print(json.dumps(note_info, indent=2, ensure_ascii=False))
+    # print(xhs.help.get_imgs_url_from_note(note_info))
 
     #get note by keyword
     # keyword = "这家店"
     # data = xhs_client.get_note_by_keyword(keyword,sort = SearchSortType.MOST_POPULAR,note_type = SearchNoteType.IMAGE)
     # print(json.dumps(data, ensure_ascii=False, indent=2))
+
+    #get topic
+    topic_keyword = "Python"
+    topics = xhs_client.get_suggest_topic(topic_keyword)
+    print(json.dumps(topics, ensure_ascii=False, indent=2))

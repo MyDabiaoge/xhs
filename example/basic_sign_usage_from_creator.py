@@ -1,5 +1,6 @@
 import datetime
 import json
+from pydoc_data.topics import topics
 
 import requests
 
@@ -29,12 +30,34 @@ if __name__ == '__main__':
     # note = xhs_client.create_image_note(title, desc, images, is_private=True, post_time="2024-12-24 20:12:59")
     # print(json.dumps(note, ensure_ascii=False, indent=2))
 
-    cookie = "a1=194077c4f55k13xv9taixk77cfm7zf0z9bg7x9c5k50000264847;webId=ba57f42593b9e55840a289fa0b755374;gid.sign=PSF1M3U6EBC/Jv6eGddPbmsWzLI=;gid=yYWfJfi820jSyYWfJfdidiKK0YfuyikEvfISMAM348TEJC28K23TxI888WJK84q8S4WfY2Sy;acw_tc=0a0b147517352985280168421ed6072f13d4d0b94278652a98b6d885948cc4;web_session=040069791562b6a5a91a6bc65b354b22d997b0"
+    cookie = "a1=194135c1450y6vt776r1mpkt26b0cke9g3peq4drj50000113707; webId=8565665a4f270d4e4533502376f271ff; gid=yj4yq2SyfjkJyj4yq2Sy4q4f28vKh9WWKFy6UFVUT9JKDd288STdjA888yyqW8W8WdJqij0J; abRequestId=8565665a4f270d4e4533502376f271ff; webBuild=4.51.1; web_session=04006979070577ea84d5258746354b8a8f782a; customer-sso-sid=68c517454529940037871464e58f3de2a90eb674; x-user-id-creator.xiaohongshu.com=5aaa3fb811be102b099ad483; customerClientId=251402100558487; access-token-creator.xiaohongshu.com=customer.creator.AT-68c517454529940037871465xpmtnops0mfjpv19; galaxy_creator_session_id=1QNeptYrgdNPwxMdVshktmp2G7Vi4v6gSOcA; galaxy.creator.beaker.session.id=1735643004845086970825; xsecappid=ugc; acw_tc=0ad5861d17358287595447696e7019897fdaa66f7ddfefc652bd6c9de9d10a; websectiga=9730ffafd96f2d09dc024760e253af6ab1feb0002827740b95a255ddf6847fc8; sec_poison_id=acd6f410-bf73-4c24-a6d7-ed6b1a5116ad"
     xhs_client = XhsClient(cookie, sign=sign)
-    title = "第一次发,试试"
-    desc = "看看效果 \n 1. 好好好 \n 2. 666"
+    title = "OMG！！！这家烧鸭粉店绝了！！！"
+    desc = '''谁懂啊？？？这家金记三都烧鸭粉真的是个宝藏店铺，柳州人的天堂，不仅有酸鲜甜的口感，还有各种配料！！！！
+
+下午六点开门，我准时冲进去，一进门就被那香气给迷住了。烧鸭酱的浓郁，白辣椒的刺激，蒜米的香，葱和香菜的清新，再加上辣油的点睛之笔，每一口都是味蕾的狂欢。最惊喜的是，还送鸭头，简直是意外的惊喜！
+
+这家店在马鹿山农贸市场入口旁，位置虽然不起眼，但味道绝对让你惊艳。每一口都让人回味无穷，真的是酸鲜甜的完美结合。吃完一碗，还想再来一碗，根本停不下来！
+#柳州美食[话题]# #烧鸭粉[话题]# #柳州探店[话题]# #美食日常[话题]# #宝藏店铺[话题]#'''
     images = [
-        r"C:\Users\85195\Pictures\IMG_7666.PNG",
+        r"C:\Users\85195\Downloads\IMG_0095.JPG",
+        r"C:\Users\85195\Downloads\IMG_0100.JPG",
+        r"C:\Users\85195\Downloads\IMG_0101.JPG",
     ]
-    note = xhs_client.create_image_note(title, desc, images, is_private=True, post_time="2024-12-24 20:12:59")
+    topics = []
+    topic_keyword_list = ["柳州美食", "烧鸭粉", "柳州探店", "美食日常", "宝藏店铺"]
+    for topic_keyword in topic_keyword_list:
+        item_topics = xhs_client.get_suggest_topic(topic_keyword)
+        if len(item_topics) > 0:
+            topic = {
+                "id": item_topics[0]["id"],
+                "name": item_topics[0]["name"],
+                "type": "topic",
+                "link": item_topics[0]["link"],
+            }
+            topics.append(topic)
+
+    print(topics)
+    note = xhs_client.create_image_note(title, desc, images, topics=topics, is_private=True,
+                                        post_time="2024-12-24 20:12:59")
     print(json.dumps(note, ensure_ascii=False, indent=2))
