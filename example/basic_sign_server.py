@@ -14,7 +14,9 @@ A1 = ""
 
 def get_context_page(instance, stealth_js_path):
     chromium = instance.chromium
-    browser = chromium.launch(headless=True)
+    # context = chromium.launch_persistent_context('./foobar', headless=True)
+    browser = chromium.launch(headless=True, args=['--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'])
+
     context = browser.new_context()
     context.add_init_script(path=stealth_js_path)
     page = context.new_page()
@@ -28,9 +30,9 @@ playwright = sync_playwright().start()
 browser_context, context_page = get_context_page(playwright, stealth_js_path)
 context_page.goto("https://www.xiaohongshu.com")
 print("正在跳转至小红书首页")
-time.sleep(5)
 context_page.reload()
-time.sleep(1)
+context_page.wait_for_load_state('networkidle')
+context_page.locator(".icon-btn-wrapper").click()
 cookies = browser_context.cookies()
 for cookie in cookies:
     if cookie["name"] == "a1":
@@ -42,12 +44,13 @@ print("跳转小红书首页成功，等待调用")
 def sign(uri, data, a1, web_session):
     try:
         # context_page.reload()
-        # # 确保页面加载完成
+        # 确保页面加载完成
         # context_page.wait_for_load_state('networkidle')
-        #
-        # # 检查页面是否处于预期状态
-        # if not context_page.is_visible('body'):
-        #     raise Exception("页面未加载完成或未处于预期状态")
+        # context_page.wait_for_load_state("load")
+
+        # 检查页面是否处于预期状态
+        if not context_page.is_visible('body'):
+            raise Exception("页面未加载完成或未处于预期状态")
         encrypt_params = context_page.evaluate("([url, data]) => window._webmsxyw(url, data)", [uri, data])
         return {
             "x-s": encrypt_params["X-s"],

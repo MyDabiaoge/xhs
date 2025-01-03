@@ -39,9 +39,11 @@ def sign(uri, data=None, a1="", web_session=""):
 
 
 if __name__ == '__main__':
+    cookie = "a1=1942b06f88dyuly5edy9w38az5air6jpaaooeoak050000265811; webId=49241bd165422b41b978e84f4c039fc8; gid=yYiSWYS2DWv0yYiSWYS2Kl83jKDqCdqVVJA8Y4d1CCW0d028KVS9v4888yYq4Jj8id4W0808; customerClientId=934657907755078; x-user-id-creator.xiaohongshu.com=5a997ef7db2e6040d372f94c; customer-sso-sid=68c5174525989699864733510c106e4bd8d45be3; access-token-creator.xiaohongshu.com=customer.creator.AT-68c51745259896998630512149wmu8d2lnymdtao; galaxy_creator_session_id=PQbPPd3bRZA5Hz5iAEEhKmiJjiZfte5NdAlw; galaxy.creator.beaker.session.id=1735193415027085561850; webBuild=4.50.1; xsecappid=xhs-pc-web; acw_tc=0a4ad62517353789475222469e871d15a17d01d144df7b10182b3e0b3b59b6; web_session=040069791562b6a5a91a0a805a354bb7faf158; unread={%22ub%22:%22676bd0a6000000001402742a%22%2C%22ue%22:%22676d406b000000001300a6b4%22%2C%22uc%22:29}; websectiga=a9bdcaed0af874f3a1431e94fbea410e8f738542fbb02df1e8e30c29ef3d91ac; sec_poison_id=eb2bf0cb-bd85-47bf-8284-0a4c677465b2"
+
     xhs_client = XhsClient(sign=sign)
     print(datetime.datetime.now())
-    phone = "login phone num"
+    phone = "17687225691"
     res = xhs_client.send_code(phone)
     print("验证码发送成功~")
     code = input("请输入验证码：")
