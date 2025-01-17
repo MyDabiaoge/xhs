@@ -30,8 +30,8 @@ if __name__ == '__main__':
     xhs_client = XhsClient(cookie, sign=sign, proxies=proxies)
     file_content = ''
     chat_content = '''
-标题:{}
--正文:
+标题：{}
+-正文：
 {}
 这是一篇点赞量很高的的小红书博主的文稿，我希望你能详细拆解。其中必须
 包括:标题、个性化和真实性、布局、长度、结构、表情包以及语言风格等。
