@@ -502,7 +502,7 @@ class XhsClient:
                 time.sleep(crawl_interval)
         return result
 
-    def get_note_comments(self, note_id: str, cursor: str = ""):
+    def get_note_comments(self, note_id: str, cursor: str = "", xsec_token: str = ""):
         """get note comments
 
         :param note_id: note id you want to fetch
@@ -512,7 +512,7 @@ class XhsClient:
         :rtype: dict
         """
         uri = "/api/sns/web/v2/comment/page"
-        params = {"note_id": note_id, "cursor": cursor, "image_formats": "jpg,webp,avif"}
+        params = {"note_id": note_id, "cursor": cursor, "image_formats": "jpg,webp,avif", 'xsec_token': xsec_token}
         return self.get(uri, params)
 
     def get_note_sub_comments(
@@ -539,7 +539,7 @@ class XhsClient:
         }
         return self.get(uri, params)
 
-    def get_note_all_comments(self, note_id: str, crawl_interval: int = 1):
+    def get_note_all_comments(self, note_id: str, crawl_interval: int = 1, xsec_token: str = ""):
         """get note all comments include sub comments
 
         :param crawl_interval: crawl interval for fetch
@@ -550,7 +550,7 @@ class XhsClient:
         comments_has_more = True
         comments_cursor = ""
         while comments_has_more:
-            comments_res = self.get_note_comments(note_id, comments_cursor)
+            comments_res = self.get_note_comments(note_id, comments_cursor, xsec_token)
             comments_has_more = comments_res.get("has_more", False)
             comments_cursor = comments_res.get("cursor", "")
             comments = comments_res["comments"]
@@ -835,12 +835,21 @@ class XhsClient:
         upload_id = self.get_upload_id(file_id, token)
         parts = []
         part_num = 1
+        
+        # 获取文件总大小
+        total_size = os.path.getsize(file_path)
+        uploaded_size = 0
+        chunk_size = 1024 * 1024 * 5  # 5MB per chunk
+        
+        print(f"\n开始上传文件: {os.path.basename(file_path)}")
+        print(f"文件大小: {total_size / 1024 / 1024:.2f}MB")
+        
         with open(file_path, "rb") as f:
-            # read with 5M each time to upload
             while True:
-                data = f.read(1024 * 1024 * 5)
+                data = f.read(chunk_size)
                 if not data:
                     break
+                    
                 params = {
                     "partNumber": part_num,
                     "uploadId": upload_id
@@ -850,7 +859,14 @@ class XhsClient:
                     "PartNumber": part_num,
                     "ETag": res.headers["Etag"]
                 })
+                
+                uploaded_size += len(data)
+                progress = (uploaded_size / total_size) * 100
+                print(f"\r上传进度: {progress:.1f}% ({uploaded_size}/{total_size} bytes)", end="", flush=True)
+                
                 part_num += 1
+                
+        print("\n分片上传完成，正在合并文件...")
         return self.create_complete_multipart_upload(file_id, token, upload_id, parts)
 
     def upload_file(
@@ -872,8 +888,8 @@ class XhsClient:
         max_file_size = 5 * 1024 * 1024
         url = "https://ros-upload.xiaohongshu.com/" + file_id
         if os.path.getsize(file_path) > max_file_size and content_type == "video/mp4":
-            raise Exception("video too large, < 5M")
-            # return self.upload_file_with_slice(file_id, token, file_path)
+            # 启用分片上传，支持大文件
+            return self.upload_file_with_slice(file_id, token, file_path)
         else:
             headers = {"X-Cos-Security-Token": token, "Content-Type": content_type}
             with open(file_path, "rb") as f:
@@ -944,6 +960,7 @@ class XhsClient:
             "video_info": video_info,
         }
         headers = {
+            "Origin": "https://creator.xiaohongshu.com",
             "Referer": "https://creator.xiaohongshu.com/"
         }
         return self.post(uri, data, headers=headers)
